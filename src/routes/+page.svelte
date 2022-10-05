@@ -10,6 +10,9 @@
 	let mediaRecorder: MediaRecorder;
 	let audioURL = '';
 	let blob: Blob;
+	let transcribedAudio = '';
+
+
 	const create = () => {
 		if (window?.navigator?.mediaDevices?.getUserMedia) {
 			window.navigator.mediaDevices
@@ -17,7 +20,10 @@
 					audio: true
 				})
 				.then((stream) => {
-					mediaRecorder = new MediaRecorder(stream);
+					const options = {
+						// mimeType : 'audio/webm;codecs=opus'
+					} as MediaRecorderOptions;
+					mediaRecorder = new MediaRecorder(stream, options);
 					setupMediaRecorder(mediaRecorder);
 				})
 				.catch((err) => {
@@ -47,7 +53,32 @@
     //   })
       let formData = new FormData();
       formData.append('audio', blob);
-      axios({
+
+
+			// var reader = new FileReader();
+			// reader.readAsDataURL(blob);
+			// reader.onloadend = function () {
+			// 	var base64String = reader.result;
+			// 	console.log('Base64 String - ', base64String);
+
+			// 	// Simply Print the Base64 Encoded String,
+			// 	// without additional data: Attributes.
+			// 	// console.log('Base64 String without Tags- ', base64String?.substr(base64String.indexOf(', ') + 1));
+			// }
+
+
+
+
+      // axios({
+      //     method: "POST",
+      //     url: 'http://localhost:8000/submit_audio',
+      //     data: blob,
+			// 		headers: {
+			// 			'content-type': 'audio/ogg'
+			// 		}
+      // })
+
+			axios({
           method: "POST",
           url: 'http://localhost:8000/submit_audio',
           data: formData
@@ -55,6 +86,7 @@
 
 			.then(function (response) {
 				console.log(response);
+				transcribedAudio = response.data.text;
 			})
 			.catch(function (error) {
 				console.log(error);
@@ -63,6 +95,7 @@
 
 	const deleteRecording = () => {
 		audioURL = '';
+		transcribedAudio = '';
 	};
 
 	const setupMediaRecorder = (mRecorder: MediaRecorder) => {
@@ -89,7 +122,7 @@
 </script>
 
 <div style="display: flex; flex-direction: column; justify-content: center; align-items: center">
-	<h1>Welcome to WikiVoice</h1>
+	<h1>MTG Assistant</h1>
 	<div style="margin: 20px">
 		<button on:click={startRecording} disabled={!!audioURL || mediaRecorder?.state === 'recording'}
 			>{'start recording'}</button
@@ -118,4 +151,8 @@
 	{#if audioURL}
 		<audio controls src={audioURL} style="margin: 20px" />
 	{/if}
+
+	<div>
+		{transcribedAudio}
+	</div>
 </div>
