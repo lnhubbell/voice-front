@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import axios from 'axios';
 
+	export const prerender = true
 	let mediaRecorder: MediaRecorder;
 	let audioURL = '';
 	let blob: Blob;
@@ -96,8 +97,6 @@
 <div style="display: flex; flex-direction: column; justify-content: center; align-items: center">
 	<h1>MTG Assistant</h1>
 
-
-
 	{#if !transcribedAudioSrc && audioURL && !error}
 	<div>
 		<img src='/ajax-loader.gif' alt='Recording Mic Icon' style="height: 80px;"/>
@@ -111,16 +110,6 @@
 	{/if}
 
 	{#if error} <p style="color: red;">{error}</p> {/if}
-
-	<!-- <section class="sound-clips" />
-	{#if audioURL}
-	<div>
-		<audio controls src={audioURL} style="margin: 20px" />
-		<button on:click={deleteRecording} disabled={!audioURL}>{'delete recording'}</button>
-		<button on:click={submitRecording} disabled={!audioURL}>{'submit recording'}</button>
-	</div>
-	{/if} -->
-
 
 	<section class="sound-clips" />
 	{#if transcribedAudioSrc}
